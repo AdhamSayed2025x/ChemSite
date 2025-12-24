@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | ChemSite</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo-area">
+            <i class="fa-solid fa-flask"></i>
+            <span>ChemSite</span>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+            <span style="color:#aaa;">|</span>
+            <span id="pageTitle" style="color:var(--primary-color); font-weight:bold;">Dashboard</span>
+        </nav>
+        <div class="header-actions">
+            <img src="https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg" 
+                 class="profile-img-btn" onclick="alert('Profile Page Coming Soon!')" alt="Profile">
+        </div>
+    </header>
+
+    <main class="scroll-body" style="align-items: flex-start; padding-top: 40px;">
+        <div class="content-container" style="display: block;">
+            
+            <div class="items-grid">
+                <h2 id="emptyMsg" style="width:100%; text-align:center; color:#ccc; margin-top:50px;">
+                    <i class="fa-solid fa-folder-open" style="font-size:3rem; display:block; margin-bottom:10px;"></i>
+                    No content added yet. <br> Start by clicking the (+) button.
+                </h2>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="fab-container">
+        <div class="fab-options" id="fabMenu">
+            <div class="fab-item" onclick="alert('Google Drive Integration coming soon!')">
+                <span>Google Drive</span>
+                <i class="fa-brands fa-google-drive"></i>
+            </div>
+            <div class="fab-item" onclick="openUploadModal()">
+                <span>Upload File</span>
+                <i class="fa-solid fa-file-arrow-up"></i>
+            </div>
+            <div class="fab-item" onclick="alert('Camera coming soon!')">
+                <span>Open Camera</span>
+                <i class="fa-solid fa-camera"></i>
+            </div>
+        </div>
+
+        <button class="fab-main-btn" onclick="toggleFab()">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+    <div id="uploadModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Content</h3> <i class="fa-solid fa-xmark close-modal" onclick="closeModal()"></i>
+            </div>
+            
+            <div class="modal-body">
+                <input type="hidden" id="editContentId">
+
+                <div class="input-group">
+                    <label>Title</label>
+                    <input type="text" id="contentTitle" placeholder="e.g. Lecture 1">
+                </div>
+
+                <div class="input-group">
+                    <label>Description</label>
+                    <textarea id="contentDesc" rows="3" placeholder="Description..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Content Source</label>
+                    <select id="contentType" onchange="toggleSourceInput()">
+                        <option value="pdf">PDF Document</option>
+                        <option value="video">Video (YouTube/Link)</option>
+                        <option value="drive">Google Drive Link</option>
+                        <option value="camera">Camera Photo</option>
+                    </select>
+                </div>
+
+                <div class="input-group" id="sourceInputContainer">
+                    <input type="text" id="contentLink" placeholder="Paste link here...">
+                </div>
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleCamera(this)">
+
+                <div class="input-group">
+                    <label>Settings & Permissions</label>
+                    <div class="admin-options">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="allowDownload" checked> Allow Download
+                        </label>
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="allowShare" checked> Allow Share
+                        </label>
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="isVisible" checked> Visible to Students
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+                <button class="publish-btn" onclick="saveContent()">Save / Publish</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fileViewer" class="viewer-overlay">
+        <div class="viewer-header">
+            <span id="viewerTitle">Viewing File</span>
+            <i class="fa-solid fa-xmark close-modal" onclick="closeViewer()" style="color:white;"></i>
+        </div>
+        <div class="viewer-body">
+            <iframe id="viewerFrame" class="viewer-frame" src=""></iframe>
+            <img id="viewerImage" class="viewer-frame" style="object-fit:contain; display:none;" src="">
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script>
+        // تغيير اسم الصفحة حسب القسم
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page');
+        if(page) document.getElementById('pageTitle').innerText = page + " Manager";
+
+        // تشغيل زرار الـ (+)
+        function toggleFab() {
+            document.getElementById('fabMenu').classList.toggle('show');
+            document.querySelector('.fab-main-btn').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
