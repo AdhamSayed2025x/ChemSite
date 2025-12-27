@@ -1,9 +1,8 @@
-
 /* ============ 1. INITIALIZATION & AUTH ============ */
 // تعريف الأدمن وتحميل البيانات الأساسية
 let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
-// قاعدة البيانات (تخزين محلي)
+// قاعدة البيانات (تخزين محلي مبدئياً لحد ما الفايربيز يحمل)
 let contentDB = JSON.parse(localStorage.getItem('chemSiteDB')) || [];
 
 window.onload = function() {
@@ -161,52 +160,10 @@ function editContent(id) {
     toggleSourceInput();
 }
 
-// حفظ المحتوى
-function saveContent() {
-    const id = document.getElementById('editContentId').value;
-    const title = document.getElementById('contentTitle').value;
-    const desc = document.getElementById('contentDesc').value;
-    const type = document.getElementById('contentType').value;
-    const link = document.getElementById('contentLink').value;
-    
-    const permissions = {
-        download: document.getElementById('allowDownload').checked,
-        share: document.getElementById('allowShare').checked,
-        visible: document.getElementById('isVisible').checked
-    };
+// حفظ المحتوى (تم استبداله بالنسخة الأونلاين في آخر الملف)
 
-    if (!title) return alert("Title is required!");
+// حذف المحتوى (تم استبداله بالنسخة الأونلاين في آخر الملف)
 
-    if (id) {
-        // تعديل
-        const index = contentDB.findIndex(c => c.id == id);
-        if (index !== -1) {
-            contentDB[index] = { ...contentDB[index], title, desc, type, link, permissions };
-        }
-    } else {
-        // إضافة جديد
-        const newItem = {
-            id: Date.now(),
-            page: new URLSearchParams(window.location.search).get('page') || 'General',
-            title, desc, type, link, permissions,
-            timestamp: new Date().toISOString()
-        };
-        contentDB.push(newItem);
-    }
-
-    localStorage.setItem('chemSiteDB', JSON.stringify(contentDB));
-    renderCards();
-    closeModal();
-}
-
-// حذف المحتوى
-function deleteContent(id) {
-    if(confirm("Delete this content permanently?")) {
-        contentDB = contentDB.filter(c => c.id != id);
-        localStorage.setItem('chemSiteDB', JSON.stringify(contentDB));
-        renderCards();
-    }
-}
 
 // غلق المودال
 function closeModal() {
@@ -221,9 +178,12 @@ function toggleSourceInput() {
     const input = document.getElementById('contentLink');
     const camInput = document.getElementById('cameraInput');
 
+    // التأكد من وجود العناصر قبل التعامل معها لتجنب الأخطاء
+    if (!container || !input) return;
+
     if (type === 'camera') {
         container.style.display = 'none';
-        camInput.click();
+        if(camInput) camInput.click();
     } else if (type === 'drive') {
         container.style.display = 'block';
         input.placeholder = "Paste Google Drive Link...";
@@ -334,18 +294,56 @@ function showComingSoon(featureName) {
     }
 }
 
+// 🔥🔥🔥🔥🔥 دالة تسجيل الدخول (النسخة الجديدة المتصلة بفايربيز) 🔥🔥🔥🔥🔥
 function performLogin() {
-    const email = document.getElementById('emailInput').value;
-    const pass = document.getElementById('passInput').value;
-    
-    // Login Logic
-    if ((email === "Adham" || email === "Adham@Vision.Bim") && pass === "123") {
-        document.getElementById('successOverlay').classList.add('active');
-        localStorage.setItem('isAdmin', 'true');
-        setTimeout(() => window.location.href = "index.html", 2000);
-    } else {
-        document.getElementById('emailError').classList.add('visible'); // Simple Error
+    // 1. بنجيب البيانات من الخانات
+    const email = document.getElementById('emailInput').value.trim();
+    const pass = document.getElementById('passInput').value.trim();
+
+    // لو الخانات فاضية نطلع تنبيه
+    if (!email || !pass) {
+        alert("Please enter email and password");
+        return;
     }
+
+    // بنغير شكل الزرار عشان يبان إنه بيحمل
+    const loginBtn = document.querySelector('.submit-login-btn');
+    const originalText = loginBtn.innerText;
+    loginBtn.innerText = "Checking...";
+    loginBtn.style.opacity = "0.7";
+    loginBtn.disabled = true; // نوقف الزرار عشان ميدوسش مرتين
+
+    // 2. أمر الفايربيز للدخول (ده السطر اللي بيشبك مع السيرفر)
+    auth.signInWithEmailAndPassword(email, pass)
+        .then((userCredential) => {
+            // ✅ الدخول نجح (البيانات صح)
+            console.log("Logged in:", userCredential.user.email);
+
+            document.getElementById('successOverlay').classList.add('active');
+            
+            // بنحفظ في المتصفح إنك بقيت أدمن
+            localStorage.setItem('isAdmin', 'true');
+            
+            // بنحفظ الإيميل عشان نعرضه في البروفايل
+            localStorage.setItem('profileEmailDisplay', userCredential.user.email);
+
+            // توجيه للصفحة الرئيسية بعد ثانيتين
+            setTimeout(() => window.location.href = "index.html", 2000);
+        })
+        .catch((error) => {
+            // ❌ الدخول فشل (البيانات غلط أو النت فاصل)
+            console.error("Error:", error.code, error.message);
+            
+            // إظهار رسالة الخطأ الحمراء
+            const errorMsg = document.getElementById('emailError');
+            errorMsg.innerText = "Wrong Email or Password"; 
+            errorMsg.classList.add('visible');
+            
+            // نرجع الزرار زي ما كان
+            loginBtn.innerText = originalText;
+            loginBtn.style.opacity = "1";
+            loginBtn.disabled = false;
+        });
 }
 
 function logoutUser() {
@@ -459,7 +457,7 @@ window.handleSearch = function() {
             
             // شكل النتيجة (أيقونة + العنوان)
             div.innerHTML = `
-                <i class="fa-solid ${getIcon(item.type)}"></i>
+                <i class="fa-solid ${getIconByType(item.type)}"></i>
                 <span>${item.title}</span>
             `;
             resultsBox.appendChild(div);
@@ -607,7 +605,7 @@ if (!firebase.apps.length) {
 
 // 3. تعريف المتغيرات للتعامل مع الداتابيز
 const db = firebase.database();
-// const auth = firebase.auth(); // هنستخدمها بعدين لوجين
+const auth = firebase.auth(); // ✅ تم التفعيل
 
 console.log("🔥 Firebase Connected Successfully!");
 
