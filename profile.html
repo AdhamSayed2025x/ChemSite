@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | ChemSite</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo-area">
+            <a href="index.html" class="icon-btn" style="font-size: 1.2rem; text-decoration:none;">
+                <i class="fa-solid fa-arrow-left"></i> <span style="font-size: 1rem; margin-left:5px;">Back</span>
+            </a>
+        </div>
+        <div class="header-actions">
+            <span style="font-weight: bold; color: var(--primary-color);">Profile</span>
+        </div>
+    </header>
+
+    <main class="scroll-body profile-page-body">
+        
+        <div class="profile-hero">
+            <div class="profile-pic-wrapper">
+                <img src="https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg" alt="User" id="profileImage">
+                
+                <div class="camera-icon" onclick="triggerCamera()">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+            </div>
+            <input type="file" id="fileUpload" accept="image/*" style="display: none;" onchange="saveProfileImage(this)">
+        </div>
+
+        <div class="profile-info-list">
+            
+            <div class="info-item">
+                <div class="icon-side"><i class="fa-solid fa-user"></i></div>
+                <div class="text-side">
+                    <label>Name</label>
+                    <p id="profileNameDisplay">Adham Sayed</p>
+                    <small>This is not your username or pin.</small>
+                </div>
+                <div class="edit-side" onclick="editField('profileNameDisplay', 'Name')"><i class="fa-solid fa-pen"></i></div>
+            </div>
+
+            <div class="info-item">
+                <div class="icon-side"><i class="fa-solid fa-circle-info"></i></div>
+                <div class="text-side">
+                    <label>About</label>
+                    <p id="profileAboutDisplay">Admin at Vision.Bim | Making Chemistry Easy 🧪</p>
+                </div>
+                <div class="edit-side" onclick="editField('profileAboutDisplay', 'About')"><i class="fa-solid fa-pen"></i></div>
+            </div>
+
+            <div class="info-item">
+                <div class="icon-side"><i class="fa-solid fa-phone"></i></div>
+                <div class="text-side">
+                    <label>Phone</label>
+                    <p>+20 15 51866326</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="icon-side"><i class="fa-solid fa-envelope"></i></div>
+                <div class="text-side">
+                    <label>Email</label>
+                    <p id="profileEmailDisplay" class="email-full-text">Adham@Vision.Bim</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="profile-settings-grid">
+            
+            <div class="setting-card" onclick="toggleTheme()">
+                <div class="setting-icon"><i class="fa-solid fa-moon" id="themeIcon"></i></div>
+                <span>Dark Mode</span>
+            </div>
+
+            <div class="setting-card" onclick="toggleLanguage()">
+                <div class="setting-icon"><i class="fa-solid fa-globe"></i></div>
+                <span id="langText">English</span>
+            </div>
+
+            <div class="setting-card" onclick="changePasswordRequest()">
+                <div class="setting-icon"><i class="fa-solid fa-lock"></i></div>
+                <span>Password</span>
+            </div>
+
+        </div>
+        <div class="logout-section">
+            <button class="logout-btn-danger" onclick="logoutUser()">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>

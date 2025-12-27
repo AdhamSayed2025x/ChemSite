@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | ChemSite</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-body">
+
+    <header class="main-header login-header">
+        <div class="logo-area">
+            <i class="fa-solid fa-flask"></i>
+            <span>ChemSite</span>
+        </div>
+        <a href="index.html" class="icon-btn" title="Back to Home">
+            <i class="fa-solid fa-house"></i>
+        </a>
+    </header>
+
+    <main class="login-container">
+        
+        <div class="login-card">
+            <div class="card-top">
+                <i class="fa-solid fa-user-graduate"></i>
+                <h2>Welcome To <span style="color:var(--primary-color);">ChemSite</span></h2>
+            </div>
+            
+            <hr class="divider">
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrapper">
+                    <input type="text" id="emailInput" placeholder="Enter Your Email" oninput="clearError('emailError')">
+                    <i class="fa-solid fa-envelope input-icon"></i>
+                </div>
+                <small id="emailError" class="error-msg">Wrong Username or Email</small>
+            </div>
+
+            <div class="form-group" style="margin-top: 25px;"> <label>Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="passInput" placeholder="Enter Your Password" oninput="clearError('passError')">
+                    <i class="fa-solid fa-lock input-icon" id="togglePass" onclick="togglePassword()"></i>
+                </div>
+                <small id="passError" class="error-msg">Wrong Password</small>
+            </div>
+
+            <button class="submit-login-btn" onclick="performLogin()">Login</button>
+
+            <div class="terms-box">
+                <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="successOverlay" class="success-screen">
+        <div class="success-content">
+            <i class="fa-regular fa-circle-check"></i>
+            <h1>Access Login</h1> <p>Redirecting to Dashboard...</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script  src="script.js"></script>
+</body>
+</html>

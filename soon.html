@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon | ChemSite</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* تنسيق خاص للجزء اللي في النص بس */
+        .coming-soon-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+            padding: 20px;
+        }
+
+        /* تنسيق الأيقونة المتغيرة */
+        #dynamicIcon {
+            font-size: 6rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite; /* أنيميشن النبض */
+        }
+
+        .cs-title {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .cs-message {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        /* زرار الرجوع */
+        .back-home-btn {
+            margin-top: 30px;
+            padding: 10px 25px;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .back-home-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* تعريف الحركات */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo-area">
+            <i class="fa-solid fa-flask"></i>
+            <span>ChemSite</span>
+        </div>
+        <nav class="nav-links">
+            <span style="color: #888;">System Status:</span>
+            <span style="color: var(--primary-color); font-weight: bold;"> Building...</span>
+        </nav>
+        <div class="header-actions">
+            <a href="index.html" class="icon-btn" title="Back to Home"><i class="fa-solid fa-house"></i></a>
+        </div>
+    </header>
+
+    <main class="scroll-body">
+        <div class="coming-soon-content">
+            <i id="dynamicIcon" class="fa-solid fa-circle-question"></i>
+            
+            <h1 id="pageName" class="cs-title">Coming Soon</h1>
+            
+            <p class="cs-message">
+                This section is currently under development. 
+                <br>
+                Dr. Mohamed Hamed & Eng. Israa Ibrahim are preparing the content.
+            </p>
+
+            <a href="index.html" class="back-home-btn">
+                <i class="fa-solid fa-arrow-left"></i> Return Home
+            </a>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-section left">
+            <span>&copy; Bimbo Soft</span>
+        </div>
+        <div class="footer-section center">
+            <small>Supervision By:</small>
+            <p>Dr. Mohamed Hamed & Eng. Israa Salam</p>
+        </div>
+        <div class="footer-section far-right">
+            <small>Developed By:</small>
+            <p>Eng. Adham Sayed & Eng. Abd Elrahman Yehia</p>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script  src="script.js">
+        // كود استقبال البيانات وتغيير الصفحة
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageType = urlParams.get('page'); // بيجيب الاسم اللي اتبعت
+
+        const iconElement = document.getElementById('dynamicIcon');
+        const titleElement = document.getElementById('pageName');
+
+        // قاموس الأيقونات (كل صفحة وليها شكلها)
+        const iconsMap = {
+            'Lectures': 'fa-chalkboard-user',
+            'Sections': 'fa-flask-vial',
+            'Login Page': 'fa-user-lock',
+            'Books': 'fa-book-open',
+            'Labs': 'fa-flask',
+            'Presentations': 'fa-video',
+            'Sheets': 'fa-file-lines'
+        };
+
+        if (pageType) {
+            titleElement.innerText = pageType + " Coming Soon";
+            
+            if (iconsMap[pageType]) {
+                iconElement.className = `fa-solid ${iconsMap[pageType]}`;
+            } else {
+                iconElement.className = "fa-solid fa-person-digging"; // أيقونة احتياطية
+            }
+        }
+    </script>
+
+</body>
+</html>

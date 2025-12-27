@@ -1,0 +1,261 @@
+/* ============ 1. تهيئة الموقع عند الفتح ============ */
+// المتغير ده بيعرفنا هل المستخدم أدمن ولا لأ من ذاكرة المتصفح
+let isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+// أول ما الصفحة تفتح، نحدث الشكل
+window.onload = function() {
+    updateUI();
+};
+
+function updateUI() {
+    const headerActions = document.querySelector('.header-actions');
+    const loginBtn = document.querySelector('.login-btn');
+
+    // شرط أساسي: لازم نكون أدمن والصفحة فيها هيدر
+    if (isAdmin && headerActions) {
+
+        // 1. تنظيف: لو فيه زرار دخول شيله (عشان احنا أدمن خلاص)
+        if (loginBtn) loginBtn.remove();
+
+        // 2. السحر: التعامل مع صورة البروفايل 🕵️‍♂️
+        let profileImg = document.querySelector('.profile-img-btn');
+
+        // نجيب الصورة المحفوظة في الذاكرة
+        const savedImg = localStorage.getItem('profilePic') || "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg";
+
+        if (!profileImg) {
+            // الحالة الأولى: الصورة مش موجودة -> يبقى نضيفها إحنا
+            const imgHTML = `
+                <img src="${savedImg}" 
+                     class="profile-img-btn" 
+                     onclick="window.location.href='profile.html'"
+                     title="Admin Profile"
+                     style="width:45px; height:45px; border-radius:50%; border:2px solid var(--primary-color); cursor:pointer;">
+            `;
+            headerActions.insertAdjacentHTML('beforeend', imgHTML);
+        } else {
+            // الحالة الثانية: الصورة موجودة (زي صفحة الأدمن) -> نحدثها ونصلح الزرار
+            profileImg.src = savedImg; // نحدث الشكل
+            profileImg.onclick = function() { window.location.href = 'profile.html'; }; // نصلح اللينك
+            profileImg.style.cursor = "pointer"; // نتأكد إن الماوس بيتحول ليد
+        }
+    }
+}
+
+/* ============ 2. منطق التنقل (المهم جداً) ============ */
+function showComingSoon(featureName) {
+    // لو رايح لصفحة تسجيل الدخول
+    if (featureName === 'Login Page') {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // هنا السحر: لو أدمن وديه لصفحة الإدارة، لو طالب وديه لصفحة الانتظار
+    if (isAdmin) {
+        window.location.href = `admin_page.html?page=${featureName}`;
+    } else {
+        window.location.href = `soon.html?page=${featureName}`;
+    }
+}
+
+/* ============ 3. منطق صفحة تسجيل الدخول ============ */
+function togglePassword() {
+    const passInput = document.getElementById('passInput');
+    const icon = document.getElementById('togglePass');
+    if (passInput.type === 'password') {
+        passInput.type = 'text';
+        icon.classList.remove('fa-lock');
+        icon.classList.add('fa-lock-open');
+    } else {
+        passInput.type = 'password';
+        icon.classList.remove('fa-lock-open');
+        icon.classList.add('fa-lock');
+    }
+}
+
+function clearError(errorId) {
+    document.getElementById(errorId).classList.remove('visible');
+}
+
+function performLogin() {
+    const email = document.getElementById('emailInput').value;
+    const pass = document.getElementById('passInput').value;
+    const emailError = document.getElementById('emailError');
+    const passError = document.getElementById('passError');
+
+    // بيانات تجريبية (Adham / 123)
+    let isValid = true;
+
+    if (email !== "Adham" && email !== "Adham@Vision.Bim") {
+        emailError.innerText = "Wrong Username";
+        emailError.classList.add('visible');
+        isValid = false;
+    }
+    if (pass !== "123") {
+        passError.innerText = "Wrong Password";
+        passError.classList.add('visible');
+        isValid = false;
+    }
+
+    if (isValid) {
+        // إظهار الشاشة الخضراء
+        document.getElementById('successOverlay').classList.add('active');
+        // حفظ إنك بقيت أدمن
+        localStorage.setItem('isAdmin', 'true');
+        // التحويل للصفحة الرئيسية بعد ثانيتين
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 2000);
+    }
+}
+
+/* ============ 4. منطق صفحة الأدمن (إضافة الملفات) ============ */
+function toggleFab() {
+    const menu = document.getElementById('fabMenu');
+    const btn = document.querySelector('.fab-main-btn');
+    if(menu) menu.classList.toggle('show');
+    if(btn) btn.classList.toggle('active');
+}
+
+function openUploadModal() {
+    document.getElementById('uploadModal').classList.add('active');
+    toggleFab(); // نقفل القائمة
+}
+
+function closeModal() {
+    document.getElementById('uploadModal').classList.remove('active');
+}
+
+function publishContent() {
+    const title = document.getElementById('contentTitle').value;
+    const desc = document.getElementById('contentDesc').value;
+    const type = document.getElementById('contentType').value;
+
+    if(title.trim() === "") {
+        alert("Please enter a title!");
+        return;
+    }
+
+    // إضافة الكارت للصفحة
+    let gridContainer = document.querySelector('.items-grid');
+    const emptyMsg = document.getElementById('emptyMsg');
+    
+    if(emptyMsg) emptyMsg.style.display = 'none';
+
+    let iconClass = 'fa-file-pdf';
+    if(type === 'video') iconClass = 'fa-video';
+    if(type === 'link') iconClass = 'fa-link';
+
+    const cardHtml = `
+        <div class="content-card">
+            <div class="card-icon"><i class="fa-solid ${iconClass}"></i></div>
+            <h3 class="card-title">${title}</h3>
+            <p class="card-desc">${desc}</p>
+            <div class="card-actions">
+                <button class="action-btn btn-delete" onclick="this.closest('.content-card').remove()"><i class="fa-solid fa-trash"></i></button>
+                <a href="#" class="action-btn btn-view">View Content</a>
+            </div>
+        </div>
+    `;
+
+    if(gridContainer) gridContainer.insertAdjacentHTML('afterbegin', cardHtml);
+
+    // تنظيف
+    document.getElementById('contentTitle').value = "";
+    document.getElementById('contentDesc').value = "";
+    closeModal();
+}
+
+/* ============ 5. أدوات عامة (بحث وفوتر) ============ */
+function toggleSearch() {
+    const searchContainer = document.querySelector('.search-container');
+    const searchInput = document.getElementById('searchInput');
+    if(searchContainer) {
+        searchContainer.classList.toggle('active');
+        if (searchContainer.classList.contains('active')) searchInput.focus();
+    }
+}
+
+function togglePopup(popupId) {
+    document.querySelectorAll('.contact-popup').forEach(p => p.classList.remove('show'));
+    const popup = document.getElementById(popupId);
+    if(popup) popup.classList.toggle('show');
+}
+
+window.onclick = function(event) {
+    if (!event.target.closest('.contact-item')) {
+        document.querySelectorAll('.contact-popup').forEach(p => p.classList.remove('show'));
+    }
+}
+
+
+
+/* ============ إضافات صفحة البروفايل (ضع هذا في آخر الملف) ============ */
+
+// 1. تشغيل الكاميرا عند الضغط على الأيقونة
+function triggerCamera() {
+    const fileInput = document.getElementById('fileUpload');
+    if(fileInput) fileInput.click();
+}
+
+// 2. حفظ الصورة عند اختيارها من الجهاز
+function saveProfileImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // 1. عرض الصورة الجديدة فوراً
+            const imgElem = document.getElementById('profileImage');
+            if(imgElem) imgElem.src = e.target.result;
+            
+            // 2. حفظ الصورة في ذاكرة المتصفح الدائمة
+            localStorage.setItem('profilePic', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// 3. تعديل النصوص (الاسم والنبذة)
+function editField(elementId, labelName) {
+    const element = document.getElementById(elementId);
+    if(element) {
+        const currentVal = element.innerText;
+        const newVal = prompt(`Enter new ${labelName}:`, currentVal);
+        
+        if (newVal && newVal.trim() !== "") {
+            element.innerText = newVal;
+            // حفظ النص الجديد باسم الـ ID بتاعه
+            localStorage.setItem(elementId, newVal);
+        }
+    }
+}
+
+// 4. استرجاع البيانات المحفوظة (بيشتغل تلقائي)
+function loadProfileData() {
+    // استرجاع الصورة
+    const savedImg = localStorage.getItem('profilePic');
+    const imgElem = document.getElementById('profileImage');
+    if (savedImg && imgElem) imgElem.src = savedImg;
+
+    // استرجاع الاسم
+    const savedName = localStorage.getItem('profileNameDisplay');
+    const nameElem = document.getElementById('profileNameDisplay');
+    if (savedName && nameElem) nameElem.innerText = savedName;
+
+    // استرجاع الوصف
+    const savedAbout = localStorage.getItem('profileAboutDisplay');
+    const aboutElem = document.getElementById('profileAboutDisplay');
+    if (savedAbout && aboutElem) aboutElem.innerText = savedAbout;
+}
+
+// كود تشغيل التحميل أول ما نفتح صفحة البروفايل
+if(window.location.href.includes('profile.html')) {
+    window.onload = loadProfileData;
+}
+
+// 5. دالة الخروج (Logout)
+function logoutUser() {
+    if(confirm("Are you sure you want to log out?")) {
+        localStorage.removeItem('isAdmin');
+        window.location.href = "index.html";
+    }
+}

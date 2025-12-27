@@ -1,0 +1,393 @@
+/* ============ 1. INITIALIZATION & AUTH ============ */
+// تعريف الأدمن وتحميل البيانات الأساسية
+let isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+// قاعدة البيانات (تخزين محلي)
+let contentDB = JSON.parse(localStorage.getItem('chemSiteDB')) || [];
+
+window.onload = function() {
+    updateUI();         // تحديث الهيدر والبروفايل
+    renderCards();      // رسم المحتوى (الكروت)
+    
+    // لو احنا في صفحة البروفايل، حمل بياناتها
+    if(window.location.href.includes('profile.html')) {
+        loadProfileData();
+    }
+};
+
+/* ============ 2. UI & HEADER LOGIC ============ */
+// تحديث الهيدر (إظهار البروفايل أو زرار الدخول)
+function updateUI() {
+    const headerActions = document.querySelector('.header-actions');
+    const loginBtn = document.querySelector('.login-btn');
+
+    // شرط أساسي: لازم نكون أدمن والصفحة فيها هيدر
+    if (isAdmin && headerActions) {
+        if (loginBtn) loginBtn.remove(); // شيل زرار الدخول
+
+        let profileImg = document.querySelector('.profile-img-btn');
+        const savedImg = localStorage.getItem('profilePic') || "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg";
+
+        if (!profileImg) {
+            // إضافة الصورة لو مش موجودة
+            const imgHTML = `
+                <img src="${savedImg}" 
+                     class="profile-img-btn" 
+                     onclick="window.location.href='profile.html'"
+                     title="Admin Profile"
+                     style="width:45px; height:45px; border-radius:50%; border:2px solid var(--primary-color); cursor:pointer;">
+            `;
+            headerActions.insertAdjacentHTML('beforeend', imgHTML);
+        } else {
+            // تحديث الصورة لو موجودة
+            profileImg.src = savedImg;
+            profileImg.onclick = function() { window.location.href = 'profile.html'; };
+            profileImg.style.cursor = "pointer";
+        }
+    }
+}
+
+/* ============ 3. CONTENT SYSTEM (RENDER & CARDS) ============ */
+// دالة رسم الكروت (الوحش الجديد)
+function renderCards() {
+    const grid = document.querySelector('.items-grid');
+    const emptyMsg = document.getElementById('emptyMsg');
+    
+    if (!grid) return; // لو مفيش شبكة (زي صفحة اللوجين) اخرج
+
+    grid.innerHTML = ''; // مسح القديم
+    const pageName = new URLSearchParams(window.location.search).get('page') || 'General';
+
+    // فلترة المحتوى حسب الصفحة
+    const pageContent = contentDB.filter(item => item.page === pageName);
+
+    if (pageContent.length === 0) {
+        if(emptyMsg) emptyMsg.style.display = 'block';
+    } else {
+        if(emptyMsg) emptyMsg.style.display = 'none';
+        
+        pageContent.forEach(item => {
+            // لو طالب والملف مخفي -> مترسموش
+            if (!isAdmin && !item.permissions.visible) return;
+
+            // تنسيق التاريخ
+            const dateStr = new Date(item.timestamp).toLocaleString('en-GB', { hour12: true });
+            
+            // تجهيز القائمة (Dropdown)
+            let menuItems = '';
+            
+            // زرار المشاهدة (للجميع)
+            menuItems += `<div class="menu-item" onclick="openViewer('${item.id}')"><i class="fa-solid fa-eye"></i> View</div>`;
+
+            // زرار التحميل (لو مسموح أو أدمن)
+            if (isAdmin || item.permissions.download) {
+                menuItems += `<div class="menu-item" onclick="downloadFile('${item.link}')"><i class="fa-solid fa-download"></i> Download</div>`;
+            }
+
+            // زرار المشاركة (لو مسموح أو أدمن)
+            if (isAdmin || item.permissions.share) {
+                menuItems += `<div class="menu-item" onclick="shareFile('${item.title}', '${item.link}')"><i class="fa-solid fa-share-nodes"></i> Share</div>`;
+            }
+
+            // أزرار الأدمن (تعديل وحذف)
+            if (isAdmin) {
+                menuItems += `<div class="menu-item" onclick="editContent('${item.id}')"><i class="fa-solid fa-pen"></i> Edit</div>`;
+                menuItems += `<div class="menu-item delete" onclick="deleteContent('${item.id}')"><i class="fa-solid fa-trash"></i> Delete</div>`;
+            }
+
+            // رسم الكارت
+            const cardHTML = `
+                <div class="content-card">
+                    <div class="card-menu-btn" onclick="toggleMenu(this, event)">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </div>
+                    <div class="card-menu-dropdown">${menuItems}</div>
+
+                    <div class="card-icon"><i class="fa-solid ${getIconByType(item.type)}"></i></div>
+                    <div class="card-meta">${dateStr}</div>
+                    
+                    <h3 class="card-title">${item.title}</h3>
+                    <p class="card-desc">${item.desc}</p>
+                    
+                    <div class="card-actions">
+                        <button class="action-btn btn-view" onclick="openViewer('${item.id}')">Open File</button>
+                    </div>
+                </div>
+            `;
+            grid.insertAdjacentHTML('afterbegin', cardHTML);
+        });
+    }
+}
+
+/* ============ 4. ADMIN ACTIONS (ADD / EDIT / DELETE) ============ */
+// فتح المودال للإضافة
+function openUploadModal() {
+    document.getElementById('uploadModal').classList.add('active');
+    document.getElementById('modalTitle').innerText = "Add New Content";
+    document.getElementById('editContentId').value = ""; // فضي المعرف
+    
+    // تصفير الخانات
+    document.getElementById('contentTitle').value = "";
+    document.getElementById('contentDesc').value = "";
+    document.getElementById('contentLink').value = "";
+    document.getElementById('contentType').value = "pdf";
+    toggleSourceInput();
+    
+    // غلق القائمة العائمة
+    const fabMenu = document.getElementById('fabMenu');
+    if(fabMenu) { fabMenu.classList.remove('show'); document.querySelector('.fab-main-btn').classList.remove('active'); }
+}
+
+// فتح المودال للتعديل
+function editContent(id) {
+    const item = contentDB.find(c => c.id == id);
+    if (!item) return;
+
+    document.getElementById('uploadModal').classList.add('active');
+    document.getElementById('modalTitle').innerText = "Edit Content";
+    document.getElementById('editContentId').value = item.id;
+    
+    document.getElementById('contentTitle').value = item.title;
+    document.getElementById('contentDesc').value = item.desc;
+    document.getElementById('contentType').value = item.type;
+    document.getElementById('contentLink').value = item.link;
+    
+    // ضبط الصلاحيات
+    document.getElementById('allowDownload').checked = item.permissions.download;
+    document.getElementById('allowShare').checked = item.permissions.share;
+    document.getElementById('isVisible').checked = item.permissions.visible;
+    
+    toggleSourceInput();
+}
+
+// حفظ المحتوى
+function saveContent() {
+    const id = document.getElementById('editContentId').value;
+    const title = document.getElementById('contentTitle').value;
+    const desc = document.getElementById('contentDesc').value;
+    const type = document.getElementById('contentType').value;
+    const link = document.getElementById('contentLink').value;
+    
+    const permissions = {
+        download: document.getElementById('allowDownload').checked,
+        share: document.getElementById('allowShare').checked,
+        visible: document.getElementById('isVisible').checked
+    };
+
+    if (!title) return alert("Title is required!");
+
+    if (id) {
+        // تعديل
+        const index = contentDB.findIndex(c => c.id == id);
+        if (index !== -1) {
+            contentDB[index] = { ...contentDB[index], title, desc, type, link, permissions };
+        }
+    } else {
+        // إضافة جديد
+        const newItem = {
+            id: Date.now(),
+            page: new URLSearchParams(window.location.search).get('page') || 'General',
+            title, desc, type, link, permissions,
+            timestamp: new Date().toISOString()
+        };
+        contentDB.push(newItem);
+    }
+
+    localStorage.setItem('chemSiteDB', JSON.stringify(contentDB));
+    renderCards();
+    closeModal();
+}
+
+// حذف المحتوى
+function deleteContent(id) {
+    if(confirm("Delete this content permanently?")) {
+        contentDB = contentDB.filter(c => c.id != id);
+        localStorage.setItem('chemSiteDB', JSON.stringify(contentDB));
+        renderCards();
+    }
+}
+
+// غلق المودال
+function closeModal() {
+    document.getElementById('uploadModal').classList.remove('active');
+}
+
+/* ============ 5. UTILS & VIEWER & CAMERA ============ */
+// تغيير حقل الادخال حسب النوع
+function toggleSourceInput() {
+    const type = document.getElementById('contentType').value;
+    const container = document.getElementById('sourceInputContainer');
+    const input = document.getElementById('contentLink');
+    const camInput = document.getElementById('cameraInput');
+
+    if (type === 'camera') {
+        container.style.display = 'none';
+        camInput.click();
+    } else if (type === 'drive') {
+        container.style.display = 'block';
+        input.placeholder = "Paste Google Drive Link...";
+    } else {
+        container.style.display = 'block';
+        input.placeholder = "Paste Link here...";
+    }
+}
+
+// التعامل مع الكاميرا
+function handleCamera(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('contentLink').value = e.target.result;
+            document.getElementById('sourceInputContainer').style.display = 'none';
+            alert("Photo captured! 📸");
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// فتح المشاهد (Viewer)
+function openViewer(id) {
+    const item = contentDB.find(c => c.id == id);
+    if (!item) return;
+
+    const viewer = document.getElementById('fileViewer');
+    const frame = document.getElementById('viewerFrame');
+    const img = document.getElementById('viewerImage');
+    const title = document.getElementById('viewerTitle');
+
+    title.innerText = item.title;
+    viewer.classList.add('active');
+
+    // لو صورة
+    if (item.type === 'camera' || item.link.startsWith('data:image')) {
+        frame.style.display = 'none';
+        img.style.display = 'block';
+        img.src = item.link;
+    } else {
+        // لو ملف/فيديو
+        img.style.display = 'none';
+        frame.style.display = 'block';
+        let url = item.link;
+        if(url.includes('youtube.com/watch?v=')) url = url.replace('watch?v=', 'embed/');
+        if(url.includes('drive.google.com') && url.includes('/view')) url = url.replace('/view', '/preview');
+        frame.src = url;
+    }
+}
+
+function closeViewer() {
+    document.getElementById('fileViewer').classList.remove('active');
+    document.getElementById('viewerFrame').src = "";
+}
+
+// القوائم المنسدلة
+function toggleMenu(btn, e) {
+    e.stopPropagation();
+    document.querySelectorAll('.card-menu-dropdown').forEach(m => m.classList.remove('show'));
+    btn.nextElementSibling.classList.toggle('show');
+}
+
+window.addEventListener('click', () => {
+    document.querySelectorAll('.card-menu-dropdown').forEach(m => m.classList.remove('show'));
+});
+
+// الأيقونات
+function getIconByType(type) {
+    if(type === 'video') return 'fa-video';
+    if(type === 'pdf') return 'fa-file-pdf';
+    if(type === 'drive') return 'fa-google-drive';
+    if(type === 'camera') return 'fa-camera';
+    return 'fa-link';
+}
+
+// دالة التحميل الوهمية
+function downloadFile(link) {
+    if(link.startsWith('data:')) {
+        const a = document.createElement('a');
+        a.href = link;
+        a.download = "downloaded_file.jpg";
+        a.click();
+    } else {
+        window.open(link, '_blank');
+    }
+}
+
+// دالة المشاركة الوهمية
+function shareFile(title, link) {
+    if(navigator.share) {
+        navigator.share({ title: title, url: link });
+    } else {
+        prompt("Copy this link:", link);
+    }
+}
+
+/* ============ 6. LOGIN & NAVIGATION & PROFILE ============ */
+function showComingSoon(featureName) {
+    if (featureName === 'Login Page') {
+        window.location.href = 'login.html';
+        return;
+    }
+    if (isAdmin) {
+        window.location.href = `admin_page.html?page=${featureName}`;
+    } else {
+        window.location.href = `soon.html?page=${featureName}`;
+    }
+}
+
+function performLogin() {
+    const email = document.getElementById('emailInput').value;
+    const pass = document.getElementById('passInput').value;
+    
+    // Login Logic
+    if ((email === "Adham" || email === "Adham@Vision.Bim") && pass === "123") {
+        document.getElementById('successOverlay').classList.add('active');
+        localStorage.setItem('isAdmin', 'true');
+        setTimeout(() => window.location.href = "index.html", 2000);
+    } else {
+        document.getElementById('emailError').classList.add('visible'); // Simple Error
+    }
+}
+
+function logoutUser() {
+    if(confirm("Are you sure you want to log out?")) {
+        localStorage.removeItem('isAdmin');
+        window.location.href = "index.html";
+    }
+}
+
+function toggleFab() {
+    document.getElementById('fabMenu').classList.toggle('show');
+    document.querySelector('.fab-main-btn').classList.toggle('active');
+}
+
+// Profile Page Logic
+function triggerCamera() { document.getElementById('fileUpload').click(); }
+function saveProfileImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profileImage').src = e.target.result;
+            localStorage.setItem('profilePic', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+function editField(id, label) {
+    const el = document.getElementById(id);
+    const val = prompt(`Enter new ${label}:`, el.innerText);
+    if(val) { el.innerText = val; localStorage.setItem(id, val); }
+}
+function loadProfileData() {
+    const img = localStorage.getItem('profilePic');
+    if(img) document.getElementById('profileImage').src = img;
+    const name = localStorage.getItem('profileNameDisplay');
+    if(name) document.getElementById('profileNameDisplay').innerText = name;
+    const about = localStorage.getItem('profileAboutDisplay');
+    if(about) document.getElementById('profileAboutDisplay').innerText = about;
+}
+
+// Login Helper
+function togglePassword() {
+    const pass = document.getElementById('passInput');
+    pass.type = pass.type === 'password' ? 'text' : 'password';
+}
+function clearError(id) { document.getElementById(id).classList.remove('visible'); }

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | ChemSite</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo">
+            <i class="fa-solid fa-gear"></i> Settings
+        </div>
+        <button class="back-btn" onclick="history.back()">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+    </header>
+
+    <div class="settings-container">
+        
+        <div class="settings-card">
+            <h3><i class="fa-solid fa-paintbrush"></i> Appearance & Language</h3>
+            
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span>Dark Mode</span>
+                    <p class="setting-desc">Switch between light and dark themes</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span>Language</span>
+                    <p class="setting-desc">Choose your preferred language</p>
+                </div>
+                <select id="languageSelect" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="ar">العربية</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><i class="fa-solid fa-bell"></i> Notifications</h3>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <span>Push Notifications</span>
+                    <p class="setting-desc">Get notified when new content is uploaded</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <h3><i class="fa-solid fa-lock"></i> Security</h3>
+            <form id="changePasswordForm" onsubmit="event.preventDefault();">
+                <div class="input-group">
+                    <label>Current Password</label>
+                    <input type="password" id="currentPass" placeholder="Enter current password">
+                </div>
+                <div class="input-group">
+                    <label>New Password</label>
+                    <input type="password" id="newPass" placeholder="Enter new password">
+                </div>
+                <div class="input-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="confirmPass" placeholder="Confirm new password">
+                </div>
+                <button type="submit" class="save-btn">Update Password</button>
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

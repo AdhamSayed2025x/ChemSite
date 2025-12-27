@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemistry Web | Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo-area">
+            <i class="fa-solid fa-flask"></i>
+            <span>ChemSite</span>
+        </div>
+
+        <nav class="nav-links">
+            <a href="#" class="active"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="#" onclick="showComingSoon('Lectures')"><i class="fa-solid fa-chalkboard-user"></i> Lec</a>
+            <a href="#" onclick="showComingSoon('Sections')"><i class="fa-solid fa-flask-vial"></i> Sec</a>
+            
+            <div class="dropdown-menu-container" id="adminMoreMenu" style="display: none;">
+                <a href="#" class="dropdown-trigger">
+                    <i class="fa-solid fa-bars"></i> More <i class="fa-solid fa-caret-down"></i>
+                </a>
+                <div class="dropdown-content">
+                    <a href="year_page.html?year=Preparatory">Preparatory Year</a>
+                    <a href="year_page.html?year=First">First Year</a>
+                    <a href="year_page.html?year=Second">Second Year</a>
+                    <a href="year_page.html?year=Third">Third Year</a>
+                    <a href="year_page.html?year=Fourth">Fourth Year</a>
+                </div>
+            </div>
+            </nav>
+
+        <div class="header-actions">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search A-Z..." onkeyup="handleSearch()">
+                <button class="icon-btn" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <div id="searchResults" class="search-results-box"></div>
+            </div>
+            
+            <button class="login-btn" onclick="window.location.href='login.html'">
+                <i class="fa-solid fa-right-to-bracket"></i> Login
+            </button>
+        </div>
+    </header>
+
+    <main class="scroll-body">
+        <div class="content-container">
+            
+            <div class="text-section">
+                <h1 class="main-title" id="pageTitle">Chemistry World</h1>
+                
+                <div class="intro-box">
+                    <h3>Introduction</h3>
+                    <p>Welcome to the ultimate chemistry learning platform. Here you will find everything related to chemical bonds, organic chemistry, and laboratory experiments designed for students.</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Information</h3>
+                    <ul class="resources-list">
+                        <li onclick="showComingSoon('Books')"><i class="fa-solid fa-book"></i> Books</li>
+                        <li onclick="showComingSoon('Labs')"><i class="fa-solid fa-flask"></i> Lab</li>
+                        <li onclick="showComingSoon('Presentations')"><i class="fa-solid fa-video"></i> Presentations</li>
+                        <li onclick="showComingSoon('Sheets')"><i class="fa-solid fa-file-lines"></i> Sheets</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="image-section">
+                <div class="image-wrapper">
+                    <img src="Dr Mohammed  .jpg" alt="Doctor Image">
+                    <p>Dr/Mohammed Hamed</p>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-section left">
+            <span>&copy; Bimbo Soft</span>
+        </div>
+
+        <div class="footer-section center">
+            <small>Supervision By:</small>
+            <p>Dr. Mohamed Hamed & Eng. Israa Ibrahim</p>
+        </div>
+
+        <div class="footer-section right-contact">
+            <div class="contact-item">
+                <div class="icon-trigger" onclick="togglePopup('wa-popup')">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </div>
+                <div id="wa-popup" class="contact-popup">
+                    <a href="#">Dr. Mohamed</a>
+                    <a href="#">Eng. Israa</a>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="icon-trigger" onclick="togglePopup('email-popup')">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <div id="email-popup" class="contact-popup">
+                    <a href="#">Dr. Mohamed</a>
+                    <a href="#">Eng. Israa</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-section far-right">
+            <small>Developed By:</small>
+            <p>Eng. Adham Sayed</p>
+            <p>Eng. Abd Elrahman Yehia</p>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
