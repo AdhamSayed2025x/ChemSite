@@ -1430,4 +1430,60 @@ Body.dark-mode .header-actions span {
         width: 280px; /* تصغير عرض صندوق البحث */
         right: -50px; /* ترحيله شوية عشان يبان */
     }
+
+}
+
+/* ============================================================
+   🔥🔥 FINAL MOBILE UPDATE (Paste at the very END of style.css) 🔥🔥
+   ============================================================ */
+
+/* تنسيق جزء البروفايل الجديد اللي جوه القائمة */
+.side-profile-section {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.side-profile-section:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+
+/* تعديلات الموبايل (البحث جنب القائمة + إخفاء البروفايل من فوق) */
+@media screen and (max-width: 768px) {
+    /* 1. تظبيط الهيدر */
+    .main-header {
+        padding: 0 15px;
+        justify-content: space-between;
+    }
+
+    /* 2. إخفاء الروابط القديمة */
+    .nav-links { display: none !important; }
+
+    /* 3. إظهار زرار البحث والقائمة */
+    .header-actions {
+        display: flex !important;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* 4. إخفاء صورة البروفايل وزرار الدخول من الهيدر (عشان بقوا جوه القائمة) */
+    .header-actions .profile-img-btn,
+    .header-actions .login-btn {
+        display: none !important;
+    }
+
+    /* 5. زرار القائمة (الهمبرجر) يظهر */
+    .menu-toggle-btn {
+        display: block !important;
+        font-size: 1.6rem;
+        color: var(--primary-color);
+    }
+
+    /* 6. تنسيق القائمة الجانبية */
+    .glass-side-menu { width: 85%; }
+    
+    /* 7. الكروت تبقى واحد بس في السطر */
+    .items-grid { grid-template-columns: 1fr !important; }
 }
