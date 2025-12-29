@@ -714,3 +714,31 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =======================================================
    🔥🔥 FIREBASE INTEGRATION (END) 🔥🔥
    ======================================================= */
+
+/* ============================================================
+   🔥🔥 SIDE MENU PROFILE LOGIC (Paste at the very END of script.js) 🔥🔥
+   ============================================================ */
+
+// دالة بتشتغل لوحدها عشان تحدث بيانات البروفايل في القائمة الجانبية
+document.addEventListener('DOMContentLoaded', () => {
+    // استنى ثانية عشان نضمن إن البيانات حملت
+    setTimeout(() => {
+        const sideImg = document.getElementById('sideMenuProfileImg');
+        const sideName = document.getElementById('sideMenuProfileName');
+        const isUserAdmin = localStorage.getItem('isAdmin') === 'true';
+
+        if (sideImg && sideName) {
+            if (isUserAdmin) {
+                // لو أدمن: هات صورته واسمه المحفوظين
+                const savedPic = localStorage.getItem('profilePic');
+                const savedName = localStorage.getItem('profileNameDisplay');
+                
+                sideImg.src = savedPic || "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg";
+                sideName.innerText = savedName || "Admin";
+            } else {
+                // لو طالب
+                sideName.innerText = "Student / Guest";
+            }
+        }
+    }, 1000);
+});
