@@ -119,6 +119,48 @@
         </div>
     </footer>
 
+<div class="glass-side-menu" id="sideMenu">
+    <button class="close-menu-btn" onclick="toggleSideMenu()">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+    
+    <div class="side-profile-section" onclick="window.location.href='profile.html'">
+        <img src="https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg" 
+             id="sideMenuProfileImg" 
+             alt="Profile" 
+             style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary-color); object-fit: cover; margin-bottom: 10px;">
+        <h4 id="sideMenuProfileName" style="color: var(--primary-color); font-weight: 700;">Guest</h4>
+        <small style="color: #666;">Tap to view profile</small>
+    </div>
+
+    <div class="side-menu-content">
+        <h3>Menu</h3>
+        <a href="index.html" class="side-link"><i class="fa-solid fa-house"></i> Home</a>
+        
+        <div class="dropdown-menu-container" style="display:block; margin:0;">
+            <div class="dropdown-trigger" style="width:100%; padding:10px 0; font-weight:bold; color:var(--primary-color);">
+                <i class="fa-solid fa-layer-group"></i> Years <i class="fa-solid fa-chevron-down" style="font-size:0.8rem; margin-left:5px;"></i>
+            </div>
+            <div class="dropdown-content" style="position:static; display:block; box-shadow:none; padding-left:20px; border-left:2px solid #eee;">
+                <a href="year_page.html?year=Preparatory">Preparatory Year</a>
+                <a href="year_page.html?year=First">First Year</a>
+                <a href="year_page.html?year=Second">Second Year</a>
+                <a href="year_page.html?year=Third">Third Year</a>
+                <a href="year_page.html?year=Fourth">Fourth Year</a>
+            </div>
+        </div>
+
+        <div class="side-tools" style="margin-top:20px;">
+            <button class="tool-btn" onclick="toggleLanguage()" style="color:#333; width:100%; text-align:left; padding:10px 0;"><i class="fa-solid fa-globe"></i> Language</button>
+            <button class="tool-btn" onclick="toggleTheme()" style="color:#333; width:100%; text-align:left; padding:10px 0;"><i class="fa-solid fa-moon"></i> Dark Mode</button>
+        </div>
+    </div>
+    
+    <div class="side-menu-footer">
+        <small>© 2025 ChemSite</small>
+    </div>
+</div>
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -126,3 +168,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
